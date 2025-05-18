@@ -9,7 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.lab2.R;
 import com.example.lab2.model.ForecastItem;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHolder>
 {
@@ -44,6 +47,20 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
         holder.date.setText(item.date);
         holder.temp.setText(item.temp + "°C");
         holder.desc.setText(item.description);
+
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+        SimpleDateFormat outputFormat = new SimpleDateFormat("EEEE, dd MMM", Locale.getDefault());
+
+        try
+        {
+            Date date = inputFormat.parse(item.date);
+            assert date != null;
+            holder.date.setText(outputFormat.format(date));
+        }
+        catch (Exception e)
+        {
+            holder.date.setText(item.date);
+        }
     }
 
     @Override

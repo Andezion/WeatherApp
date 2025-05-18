@@ -26,8 +26,9 @@ public class ForecastParser
                     String description = item.getJSONArray("weather")
                             .getJSONObject(0)
                             .getString("description");
+                    String iconCode = item.getJSONArray("weather").getJSONObject(0).getString("icon");
 
-                    forecastList.add(new ForecastItem(dt_txt, temp, description));
+                    forecastList.add(new ForecastItem(dt_txt, temp, description, iconCode));
                 }
             }
 
