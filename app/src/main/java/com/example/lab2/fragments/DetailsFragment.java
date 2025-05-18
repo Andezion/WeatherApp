@@ -1,4 +1,6 @@
 package com.example.lab2.fragments;
 
-public class DetailsFragment {
+public class DetailsFragment
+{
+
 }
