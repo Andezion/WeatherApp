@@ -22,7 +22,8 @@ public class ForecastFragment extends Fragment
 {
     private RecyclerView recyclerView;
 
-    public ForecastFragment() {}
+    private List<ForecastItem> forecastList;
+
 
     @Nullable
     @Override
@@ -50,5 +51,12 @@ public class ForecastFragment extends Fragment
         }).start();
 
         return view;
+    }
+
+    public static ForecastFragment newInstance(List<ForecastItem> list)
+    {
+        ForecastFragment fragment = new ForecastFragment();
+        fragment.forecastList = list;
+        return fragment;
     }
 }
