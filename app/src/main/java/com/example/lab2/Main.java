@@ -1,28 +1,37 @@
 package com.example.lab2;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.lab2.adapters.CityPagerAdapter;
 import com.example.lab2.api.WeatherApi;
 import com.example.lab2.fragments.DetailsFragment;
 import com.example.lab2.fragments.ForecastFragment;
 import com.example.lab2.fragments.WeatherFragment;
+import com.example.lab2.storage.FavoritesManager;
 import com.example.lab2.storage.WeatherCache;
 import com.example.lab2.utils.JSonParser;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.example.lab2.R;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.List;
 import java.util.Map;
 
 public class Main extends AppCompatActivity
 {
-    private final String defaultCity = "Lodz";
+    private String defaultCity;
 
     @SuppressLint("NonConstantResourceId")
     @Override
@@ -30,6 +39,22 @@ public class Main extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        defaultCity = loadCityFromPreferences();
+
+        List<String> cities = FavoritesManager.loadFavorites(this);
+        CityPagerAdapter adapter = new CityPagerAdapter(this, cities);
+
+        Log.d("FAVORITES", "Загруженные города: " + cities);
+
+        ViewPager2 viewPager = findViewById(R.id.view_pager);
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
+
+        viewPager.setAdapter(adapter);
+
+        new TabLayoutMediator(tabLayout, viewPager,
+                (tab, position) -> tab.setText(cities.get(position))
+        ).attach();
 
         new Thread(() ->
         {
@@ -40,58 +65,6 @@ public class Main extends AppCompatActivity
 
                 Map<String, String> weatherData = JSonParser.parseWeather(json);
                 Log.d("WeatherData", weatherData.toString());
-
-                runOnUiThread(() -> {
-                    WeatherFragment fragment = new WeatherFragment(
-                            weatherData.get("city"),
-                            weatherData.get("lat"),
-                            weatherData.get("lon"),
-                            weatherData.get("temp"),
-                            weatherData.get("description")
-                    );
-
-                    // ✅ правильно вставляем во FrameLayout
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, fragment)
-                            .commit();
-
-                    BottomNavigationView nav = findViewById(R.id.bottom_navigation);
-                    nav.setOnItemSelectedListener(item -> {
-                        Fragment selectedFragment = null;
-                        int itemId = item.getItemId();
-
-                        if (itemId == R.id.nav_basic) {
-                            selectedFragment = new WeatherFragment(
-                                    weatherData.get("city"),
-                                    weatherData.get("lat"),
-                                    weatherData.get("lon"),
-                                    weatherData.get("temp"),
-                                    weatherData.get("description")
-                            );
-                        } else if (itemId == R.id.nav_details) {
-                                selectedFragment = new DetailsFragment(
-                                        weatherData.get("wind_speed"),
-                                        weatherData.get("humidity"),
-                                        weatherData.containsKey("visibility")
-                                                ? weatherData.get("visibility")
-                                                : "10000"
-                                );
-
-                        } else if (itemId == R.id.nav_forecast) {
-                            selectedFragment = new ForecastFragment();
-                        }
-
-                        if (selectedFragment != null) {
-                            getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.fragment_container, selectedFragment)
-                                    .commit();
-                            return true;
-                        }
-
-                        return false;
-                    });
-                });
-
             }
             catch (Exception e)
             {
@@ -111,5 +84,53 @@ public class Main extends AppCompatActivity
                 }
             }
         }).start();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.top_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.menu_change_city) {
+            showChangeCityDialog();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showChangeCityDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Введите город");
+
+        final EditText input = new EditText(this);
+        input.setHint("Например: Warsaw");
+        builder.setView(input);
+
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            String newCity = input.getText().toString().trim();
+            if (!newCity.isEmpty()) {
+                FavoritesManager.addCity(this, newCity); // добавляем в список
+                saveCityToPreferences(newCity);         // сохраняем как выбранный
+                recreate();
+            }
+        });
+
+        builder.setNegativeButton("Отмена", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+    private void saveCityToPreferences(String city) {
+        getSharedPreferences("weather_prefs", MODE_PRIVATE)
+                .edit()
+                .putString("last_city", city)
+                .apply();
+    }
+
+    private String loadCityFromPreferences() {
+        return getSharedPreferences("weather_prefs", MODE_PRIVATE)
+                .getString("last_city", "Lodz");
     }
 }
