@@ -1,5 +1,6 @@
 package com.example.lab2.fragments;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -52,6 +55,25 @@ public class CityContainerFragment extends Fragment {
         }
 
         BottomNavigationView nav = view.findViewById(R.id.bottom_navigation);
+
+//        ViewCompat.setOnApplyWindowInsetsListener(nav, (v, insets) -> {
+//            int bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom;
+//            v.setPadding(0, 0, 0, bottomInset);
+//            return insets;
+//        });
+
+        view.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            int[] location = new int[2];
+            nav.getLocationOnScreen(location);
+
+            int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+            int navBottom = location[1] + nav.getHeight();
+
+            int overlap = navBottom - screenHeight;
+            if (overlap > 0) {
+                nav.setPadding(0, 0, 0, overlap + 16); // 16dp дополнительного отступа
+            }
+        });
 
         // Загрузка данных
         new Thread(() -> {

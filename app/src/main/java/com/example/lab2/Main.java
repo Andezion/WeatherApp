@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.lab2.adapters.CityPagerAdapter;
 import com.example.lab2.api.WeatherApi;
@@ -21,6 +22,7 @@ import com.example.lab2.fragments.ForecastFragment;
 import com.example.lab2.fragments.WeatherFragment;
 import com.example.lab2.storage.FavoritesManager;
 import com.example.lab2.storage.WeatherCache;
+import com.example.lab2.utils.DepthPageTransformer;
 import com.example.lab2.utils.JSonParser;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -28,6 +30,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class Main extends AppCompatActivity
 {
@@ -37,6 +40,8 @@ public class Main extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        Objects.requireNonNull(getSupportActionBar()).setTitle("");
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -51,6 +56,7 @@ public class Main extends AppCompatActivity
         TabLayout tabLayout = findViewById(R.id.tab_layout);
 
         viewPager.setAdapter(adapter);
+        viewPager.setPageTransformer(new DepthPageTransformer());
 
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, position) -> tab.setText(cities.get(position))
@@ -87,21 +93,62 @@ public class Main extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         getMenuInflater().inflate(R.menu.top_menu, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.menu_change_city) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    {
+        if (item.getItemId() == R.id.menu_change_city)
+        {
             showChangeCityDialog();
+            return true;
+        }
+        else if (item.getItemId() == R.id.menu_remove_city)
+        {
+            showRemoveCityDialog();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+    private void showRemoveCityDialog()
+    {
+        List<String> cities = FavoritesManager.loadFavorites(this);
+        String[] cityArray = cities.toArray(new String[0]);
 
-    private void showChangeCityDialog() {
+        if (cities.size() == 1)
+        {
+            Toast.makeText(this, "Нельзя удалить последний город", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Выберите город для удаления");
+
+        builder.setItems(cityArray, (dialog, which) ->
+        {
+            String cityToRemove = cityArray[which];
+            FavoritesManager.removeCity(this, cityToRemove);
+            Toast.makeText(this, "Удалено: " + cityToRemove, Toast.LENGTH_SHORT).show();
+
+            String currentCity = loadCityFromPreferences();
+            if (currentCity.equals(cityToRemove))
+            {
+                saveCityToPreferences("Lodz");
+            }
+
+            recreate();
+        });
+
+        builder.setNegativeButton("Отмена", null);
+        builder.show();
+    }
+
+    private void showChangeCityDialog()
+    {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Введите город");
 
@@ -109,11 +156,13 @@ public class Main extends AppCompatActivity
         input.setHint("Например: Warsaw");
         builder.setView(input);
 
-        builder.setPositiveButton("OK", (dialog, which) -> {
+        builder.setPositiveButton("OK", (dialog, which) ->
+        {
             String newCity = input.getText().toString().trim();
-            if (!newCity.isEmpty()) {
-                FavoritesManager.addCity(this, newCity); // добавляем в список
-                saveCityToPreferences(newCity);         // сохраняем как выбранный
+            if (!newCity.isEmpty())
+            {
+                FavoritesManager.addCity(this, newCity);
+                saveCityToPreferences(newCity);
                 recreate();
             }
         });
@@ -122,14 +171,16 @@ public class Main extends AppCompatActivity
         builder.show();
     }
 
-    private void saveCityToPreferences(String city) {
+    private void saveCityToPreferences(String city)
+    {
         getSharedPreferences("weather_prefs", MODE_PRIVATE)
                 .edit()
                 .putString("last_city", city)
                 .apply();
     }
 
-    private String loadCityFromPreferences() {
+    private String loadCityFromPreferences()
+    {
         return getSharedPreferences("weather_prefs", MODE_PRIVATE)
                 .getString("last_city", "Lodz");
     }
