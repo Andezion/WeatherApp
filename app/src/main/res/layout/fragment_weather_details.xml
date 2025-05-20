@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_weather_details"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal|top"
+    android:padding="16dp"
+    android:background="@color/detailsBackground">
+
+    <TextView android:id="@+id/text_wind"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="100dp"
+        android:text="Ветер" />
+
+    <TextView android:id="@+id/text_humidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="100dp"
+        android:text="Влажность" />
+
+    <TextView android:id="@+id/text_visibility"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="100dp"
+        android:text="Видимость" />
+</LinearLayout>
