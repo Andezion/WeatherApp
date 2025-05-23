@@ -1,5 +1,7 @@
 package com.example.lab2.model;
 
+// Наша модель
+
 public class ForecastItem
 {
     public String date;

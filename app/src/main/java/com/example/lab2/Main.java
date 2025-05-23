@@ -6,37 +6,33 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.lab2.adapters.CityPagerAdapter;
-import com.example.lab2.api.WeatherApi;
-import com.example.lab2.fragments.DetailsFragment;
-import com.example.lab2.fragments.ForecastFragment;
-import com.example.lab2.fragments.WeatherFragment;
 import com.example.lab2.storage.FavoritesManager;
-import com.example.lab2.storage.WeatherCache;
 import com.example.lab2.utils.DepthPageTransformer;
-import com.example.lab2.utils.JSonParser;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class Main extends AppCompatActivity
 {
-    private String defaultCity;
+    private ViewPager2 viewPager;
+    private CityPagerAdapter adapter;
+    private List<String> cities;
+    private TabLayout tabLayout;
 
-    @SuppressLint("NonConstantResourceId")
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -45,51 +41,24 @@ public class Main extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        defaultCity = loadCityFromPreferences();
+        cities = new ArrayList<>(FavoritesManager.loadFavorites(this));
+        if (cities.isEmpty())
+        {
+            cities.add("Lodz");
+            FavoritesManager.saveFavorites(this, cities);
+        }
 
-        List<String> cities = FavoritesManager.loadFavorites(this);
-        CityPagerAdapter adapter = new CityPagerAdapter(this, cities);
+        viewPager = findViewById(R.id.view_pager);
+        tabLayout = findViewById(R.id.tab_layout);
 
-        Log.d("FAVORITES", "Загруженные города: " + cities);
-
-        ViewPager2 viewPager = findViewById(R.id.view_pager);
-        TabLayout tabLayout = findViewById(R.id.tab_layout);
-
+        adapter = new CityPagerAdapter(this, cities);
         viewPager.setAdapter(adapter);
+
         viewPager.setPageTransformer(new DepthPageTransformer());
 
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, position) -> tab.setText(cities.get(position))
         ).attach();
-
-        new Thread(() ->
-        {
-            try
-            {
-                String json = WeatherApi.fetchWeatherData(defaultCity);
-                WeatherCache.saveToCache(getApplicationContext(), json);
-
-                Map<String, String> weatherData = JSonParser.parseWeather(json);
-                Log.d("WeatherData", weatherData.toString());
-            }
-            catch (Exception e)
-            {
-                Log.e("WeatherFetch", "Ошибка при получении данных - загружаем из кеша", e);
-                String cachedJson = WeatherCache.readFromCache(getApplicationContext());
-
-                if (cachedJson != null)
-                {
-                    Map<String, String> weatherData = JSonParser.parseWeather(cachedJson);
-                    runOnUiThread(() ->
-                            Toast.makeText(this, "Кеш: " + weatherData.get("temp") + "°C", Toast.LENGTH_LONG).show());
-                }
-                else
-                {
-                    runOnUiThread(() ->
-                            Toast.makeText(this, "Нет данных о погоде", Toast.LENGTH_LONG).show());
-                }
-            }
-        }).start();
     }
 
     @Override
@@ -114,33 +83,41 @@ public class Main extends AppCompatActivity
         }
         return super.onOptionsItemSelected(item);
     }
+
     private void showRemoveCityDialog()
     {
-        List<String> cities = FavoritesManager.loadFavorites(this);
-        String[] cityArray = cities.toArray(new String[0]);
-
         if (cities.size() == 1)
         {
             Toast.makeText(this, "Нельзя удалить последний город", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        String[] cityArray = cities.toArray(new String[0]);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Выберите город для удаления");
+        builder.setItems(cityArray, (dialog, which) -> {
+            String cityToRemove = cities.get(which);
+            int currentIndex = viewPager.getCurrentItem();
 
-        builder.setItems(cityArray, (dialog, which) ->
-        {
-            String cityToRemove = cityArray[which];
             FavoritesManager.removeCity(this, cityToRemove);
-            Toast.makeText(this, "Удалено: " + cityToRemove, Toast.LENGTH_SHORT).show();
+            cities.remove(cityToRemove);
 
-            String currentCity = loadCityFromPreferences();
-            if (currentCity.equals(cityToRemove))
+            adapter = new CityPagerAdapter(this, cities);
+            viewPager.setAdapter(adapter);
+
+            new TabLayoutMediator(tabLayout, viewPager,
+                    (tab, position) -> tab.setText(cities.get(position))
+            ).attach();
+
+            // Выбираем ближайшую вкладку
+            if (currentIndex >= cities.size())
             {
-                saveCityToPreferences("Lodz");
+                currentIndex = cities.size() - 1;
             }
+            viewPager.setCurrentItem(currentIndex, false);
 
-            recreate();
+            Toast.makeText(this, "Удалено: " + cityToRemove, Toast.LENGTH_SHORT).show();
         });
 
         builder.setNegativeButton("Отмена", null);
@@ -156,32 +133,33 @@ public class Main extends AppCompatActivity
         input.setHint("Например: Warsaw");
         builder.setView(input);
 
-        builder.setPositiveButton("OK", (dialog, which) ->
-        {
+        builder.setPositiveButton("OK", (dialog, which) -> {
             String newCity = input.getText().toString().trim();
-            if (!newCity.isEmpty())
+            if (!newCity.isEmpty() && !cities.contains(newCity))
             {
                 FavoritesManager.addCity(this, newCity);
-                saveCityToPreferences(newCity);
-                recreate();
+                cities.add(newCity);
+
+                adapter = new CityPagerAdapter(this, cities);
+                viewPager.setAdapter(adapter);
+
+                new TabLayoutMediator(tabLayout, viewPager,
+                        (tab, position) -> tab.setText(cities.get(position))
+                ).attach();
+
+                viewPager.setCurrentItem(cities.size() - 1, false);
+
+                viewPager.post(() -> {
+                    viewPager.measure(
+                            View.MeasureSpec.makeMeasureSpec(viewPager.getWidth(), View.MeasureSpec.EXACTLY),
+                            View.MeasureSpec.makeMeasureSpec(viewPager.getHeight(), View.MeasureSpec.EXACTLY)
+                    );
+                    viewPager.requestLayout();
+                });
             }
         });
 
         builder.setNegativeButton("Отмена", (dialog, which) -> dialog.cancel());
         builder.show();
-    }
-
-    private void saveCityToPreferences(String city)
-    {
-        getSharedPreferences("weather_prefs", MODE_PRIVATE)
-                .edit()
-                .putString("last_city", city)
-                .apply();
-    }
-
-    private String loadCityFromPreferences()
-    {
-        return getSharedPreferences("weather_prefs", MODE_PRIVATE)
-                .getString("last_city", "Lodz");
     }
 }

@@ -1,28 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragment_weather_details"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_horizontal|top"
-    android:padding="16dp"
-    android:background="@color/detailsBackground">
+    android:background="@drawable/background_gradient"
+    android:padding="24dp">
 
-    <TextView android:id="@+id/text_wind"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="100dp"
-        android:text="Ветер" />
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
 
-    <TextView android:id="@+id/text_humidity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="100dp"
-        android:text="Влажность" />
+        <TextView
+            android:id="@+id/text_wind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Скорость ветра"
+            android:textSize="18sp"
+            android:layout_marginTop="12dp"
+            android:paddingTop="100dp"
+            android:textColor="#333333" />
 
-    <TextView android:id="@+id/text_visibility"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="100dp"
-        android:text="Видимость" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/text_wind_direction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Направление ветра"
+            android:textSize="18sp"
+            android:layout_marginTop="8dp"
+            android:textColor="#333333" />
+
+        <TextView
+            android:id="@+id/text_humidity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Влажность"
+            android:textSize="18sp"
+            android:layout_marginTop="8dp"
+            android:textColor="#333333" />
+
+        <TextView
+            android:id="@+id/text_visibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Видимость"
+            android:textSize="18sp"
+            android:layout_marginTop="8dp"
+            android:textColor="#333333" />
+
+        <TextView
+            android:id="@+id/text_pressure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Давление"
+            android:textSize="18sp"
+            android:layout_marginTop="8dp"
+            android:textColor="#333333" />
+
+        <TextView
+            android:id="@+id/text_feels_like"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ощущается как"
+            android:textSize="18sp"
+            android:layout_marginTop="8dp"
+            android:textColor="#333333" />
+
+        <TextView
+            android:id="@+id/text_temp_range"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Мин/Макс температура"
+            android:textSize="18sp"
+            android:layout_marginTop="8dp"
+            android:textColor="#333333" />
+
+        <TextView
+            android:id="@+id/text_coordinates"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Координаты"
+            android:textSize="18sp"
+            android:layout_marginTop="8dp"
+            android:textColor="#333333" />
+
+        <TextView
+            android:id="@+id/text_sunrise"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Восход"
+            android:textSize="18sp"
+            android:layout_marginTop="8dp"
+            android:textColor="#333333" />
+
+        <TextView
+            android:id="@+id/text_sunset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Закат"
+            android:textSize="18sp"
+            android:layout_marginTop="8dp"
+            android:textColor="#333333" />
+
+    </LinearLayout>
+</ScrollView>

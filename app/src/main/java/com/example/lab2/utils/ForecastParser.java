@@ -7,21 +7,26 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+// Чтобы было понятно что отображать и за когда
+
 public class ForecastParser
 {
-    public static List<ForecastItem> parseForecast(String json) {
+    public static List<ForecastItem> parseForecast(String json)
+    {
         List<ForecastItem> forecastList = new ArrayList<>();
 
-        try {
+        try
+        {
             JSONObject obj = new JSONObject(json);
             JSONArray list = obj.getJSONArray("list");
 
-            for (int i = 0; i < list.length(); i++) {
+            for (int i = 0; i < list.length(); i++)
+            {
                 JSONObject item = list.getJSONObject(i);
                 String dt_txt = item.getString("dt_txt");
 
-                // Отбираем прогнозы на 12:00
-                if (dt_txt.contains("12:00:00")) {
+                if (dt_txt.contains("12:00:00"))
+                {
                     String temp = item.getJSONObject("main").getString("temp");
                     String description = item.getJSONArray("weather")
                             .getJSONObject(0)
@@ -32,7 +37,9 @@ public class ForecastParser
                 }
             }
 
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
 

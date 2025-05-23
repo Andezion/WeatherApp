@@ -5,6 +5,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.viewpager2.widget.ViewPager2;
 
+// Красивое перелистывание
+
 public class DepthPageTransformer implements ViewPager2.PageTransformer
 {
     @Override

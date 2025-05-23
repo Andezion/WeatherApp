@@ -5,13 +5,15 @@
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:clipChildren="false"
+    android:orientation="vertical"
+    android:background="@drawable/background_gradient">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:background="@android:color/transparent"
         android:title="Погода"
         android:titleTextColor="@android:color/white" />
 
@@ -19,9 +21,20 @@
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabMode="scrollable"
         app:tabGravity="fill"
-        android:importantForAccessibility="no" />
+        app:tabMode="scrollable"
+        app:tabIndicatorColor="@android:color/white"
+
+        app:tabIndicatorHeight="4dp"
+        app:tabIndicatorFullWidth="true"
+
+
+        app:tabSelectedTextColor="#FFFFFFFF"
+        app:tabRippleColor="@android:color/transparent"
+        android:background="@android:color/transparent"
+        android:contentDescription="Города погоды" />
+
+
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"

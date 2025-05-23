@@ -9,6 +9,8 @@ import com.example.lab2.fragments.CityContainerFragment;
 
 import java.util.List;
 
+// Файл для листания между городами (Fragment in ViewPager2)
+// Без него не видели бы интерфейс
 
 public class CityPagerAdapter extends FragmentStateAdapter
 {
@@ -28,7 +30,8 @@ public class CityPagerAdapter extends FragmentStateAdapter
     }
 
     @Override
-    public int getItemCount() {
+    public int getItemCount()
+    {
         return cities.size();
     }
 }

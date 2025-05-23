@@ -5,9 +5,25 @@ import android.content.Context;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
 
+// Сохраняем данные и читаем из из внутреннего файла приложения
+
 public class WeatherCache
 {
     private static final String FILE_NAME = "weather_cache.json";
+
+    public static void saveForecastToCache(Context context, String city, String json)
+    {
+        context.getSharedPreferences("forecast_cache", Context.MODE_PRIVATE)
+                .edit()
+                .putString(city.toLowerCase(), json)
+                .apply();
+    }
+
+    public static String readForecastFromCache(Context context, String city)
+    {
+        return context.getSharedPreferences("forecast_cache", Context.MODE_PRIVATE)
+                .getString(city.toLowerCase(), null);
+    }
 
     public static void saveToCache(Context context, String jsonData)
     {

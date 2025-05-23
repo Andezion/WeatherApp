@@ -5,6 +5,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+// Чтобы было видно что-то в деталях
+
 public class JSonParser
 {
     public static Map<String, String> parseWeather(String jsonString)
@@ -30,6 +32,13 @@ public class JSonParser
             weatherData.put("wind_deg", wind.getString("deg"));
             weatherData.put("lat", coord.getString("lat"));
             weatherData.put("lon", coord.getString("lon"));
+            weatherData.put("feels_like", main.getString("feels_like"));
+            weatherData.put("temp_min", main.getString("temp_min"));
+            weatherData.put("temp_max", main.getString("temp_max"));
+
+            JSONObject sys = obj.getJSONObject("sys");
+            weatherData.put("sunrise", sys.getString("sunrise"));
+            weatherData.put("sunset", sys.getString("sunset"));
 
         }
         catch (Exception e)

@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+// Отвечает за список избранных
+
 public class FavoritesManager
 {
     private static final String PREF_NAME = "weather_prefs";

@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+// Нужен для работы с АПИ, отсюда получаем данные которые потом идут дальше
+
 public class WeatherApi
 {
     private static final String API_KEY = APIKey.WEATHER_API_KEY;
@@ -39,14 +41,16 @@ public class WeatherApi
         return json.toString();
     }
 
-    public static String fetchForecastData(String city) throws Exception {
+    public static String fetchForecastData(String city) throws Exception
+    {
         String urlString = String.format("https://api.openweathermap.org/data/2.5/forecast?q=%s&units=metric&appid=%s",
                 city, APIKey.WEATHER_API_KEY);
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
 
-        if (conn.getResponseCode() != 200) {
+        if (conn.getResponseCode() != 200)
+        {
             throw new RuntimeException("HTTP error: " + conn.getResponseCode());
         }
 
@@ -54,7 +58,8 @@ public class WeatherApi
         StringBuilder json = new StringBuilder();
         String line;
 
-        while ((line = reader.readLine()) != null) {
+        while ((line = reader.readLine()) != null)
+        {
             json.append(line);
         }
 
@@ -63,5 +68,4 @@ public class WeatherApi
 
         return json.toString();
     }
-
 }

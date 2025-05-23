@@ -17,18 +17,24 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+// Нужен для того, что красиво показать погоду на 5 ближайших дней
+// Говорит как, где и что нужно показывать
+
 public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHolder>
 {
     private final List<ForecastItem> forecastList;
 
-    public ForecastAdapter(List<ForecastItem> forecastList) {
+    public ForecastAdapter(List<ForecastItem> forecastList)
+    {
         this.forecastList = forecastList;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder
+    {
         TextView date, temp, desc;
 
-        public ViewHolder(View view) {
+        public ViewHolder(View view)
+        {
             super(view);
             date = view.findViewById(R.id.text_date);
             temp = view.findViewById(R.id.text_temp);
@@ -38,7 +44,8 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
 
     @NonNull
     @Override
-    public ForecastAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ForecastAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_forecast, parent, false);
         return new ViewHolder(v);
@@ -46,7 +53,8 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+    {
 
         ForecastItem item = forecastList.get(position);
         holder.date.setText(item.date);
@@ -73,7 +81,8 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
     }
 
     @Override
-    public int getItemCount() {
+    public int getItemCount()
+    {
         return forecastList.size();
     }
 }

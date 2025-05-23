@@ -25,14 +25,16 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.List;
 import java.util.Map;
 
-public class CityContainerFragment extends Fragment {
+// Отвечает за переключение между экранами
 
+public class CityContainerFragment extends Fragment
+{
     private String city;
-
     private Map<String, String> weatherData;
     private List<ForecastItem> forecastList;
 
-    public static CityContainerFragment newInstance(String city) {
+    public static CityContainerFragment newInstance(String city)
+    {
         CityContainerFragment fragment = new CityContainerFragment();
         Bundle args = new Bundle();
         args.putString("city", city);
@@ -46,11 +48,13 @@ public class CityContainerFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+                             @Nullable Bundle savedInstanceState)
+    {
 
         View view = inflater.inflate(R.layout.fragment_city_container, container, false);
 
-        if (getArguments() != null) {
+        if (getArguments() != null)
+        {
             city = getArguments().getString("city");
         }
 
@@ -62,7 +66,8 @@ public class CityContainerFragment extends Fragment {
 //            return insets;
 //        });
 
-        view.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+        view.getViewTreeObserver().addOnGlobalLayoutListener(() ->
+        {
             int[] location = new int[2];
             nav.getLocationOnScreen(location);
 
@@ -70,14 +75,16 @@ public class CityContainerFragment extends Fragment {
             int navBottom = location[1] + nav.getHeight();
 
             int overlap = navBottom - screenHeight;
-            if (overlap > 0) {
-                nav.setPadding(0, 0, 0, overlap + 16); // 16dp дополнительного отступа
+            if (overlap > 0)
+            {
+                nav.setPadding(0, 0, 0, overlap + 16);
             }
         });
 
-        // Загрузка данных
-        new Thread(() -> {
-            try {
+        new Thread(() ->
+        {
+            try
+            {
                 String json = WeatherApi.fetchWeatherData(city);
                 String forecastJson = WeatherApi.fetchForecastData(city);
 
@@ -91,7 +98,7 @@ public class CityContainerFragment extends Fragment {
                             weatherData.get("lat"),
                             weatherData.get("lon"),
                             weatherData.get("temp"),
-                            weatherData.get("description")
+                            weatherData.get("icon")
                     );
 
                     getChildFragmentManager().beginTransaction()
@@ -102,7 +109,8 @@ public class CityContainerFragment extends Fragment {
                         Fragment selected = null;
 
                         int id = item.getItemId();
-                        if (id == R.id.nav_basic) {
+                        if (id == R.id.nav_basic)
+                        {
                             selected = new WeatherFragment(
                                     weatherData.get("city"),
                                     weatherData.get("lat"),
@@ -110,17 +118,18 @@ public class CityContainerFragment extends Fragment {
                                     weatherData.get("temp"),
                                     weatherData.get("description")
                             );
-                        } else if (id == R.id.nav_details) {
-                            selected = new DetailsFragment(
-                                    weatherData.get("wind_speed"),
-                                    weatherData.get("humidity"),
-                                    weatherData.containsKey("visibility") ? weatherData.get("visibility") : "10000"
-                            );
-                        } else if (id == R.id.nav_forecast) {
-                            selected = ForecastFragment.newInstance(forecastList);
+                        }
+                        else if (id == R.id.nav_details)
+                        {
+                            selected = new DetailsFragment(weatherData);
+                        }
+                        else if (id == R.id.nav_forecast)
+                        {
+                            selected = ForecastFragment.newInstance(city);
                         }
 
-                        if (selected != null) {
+                        if (selected != null)
+                        {
                             getChildFragmentManager().beginTransaction()
                                     .replace(R.id.inner_fragment_container, selected)
                                     .commit();
@@ -130,7 +139,9 @@ public class CityContainerFragment extends Fragment {
                     });
                 });
 
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Log.e("CityFragment", "Ошибка загрузки погоды", e);
                 requireActivity().runOnUiThread(() ->
                         Toast.makeText(requireContext(), "Ошибка загрузки погоды", Toast.LENGTH_SHORT).show());

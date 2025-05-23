@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/white">
     <item
         android:id="@+id/menu_remove_city"
         android:title="Удалить город"
         android:icon="@android:drawable/ic_menu_delete"
+        android:background="@android:color/white"
         app:showAsAction="never" />
     <item
         android:id="@+id/menu_change_city"
         android:title="Сменить город"
         android:icon="@android:drawable/ic_menu_edit"
+        android:background="@android:color/white"
         app:showAsAction="always" />
 </menu>

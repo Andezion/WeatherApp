@@ -1,18 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/nav_basic"
         android:icon="@android:drawable/ic_menu_info_details"
-        android:title="Основное" />
+        android:title="Общее"
+        android:iconTint="@color/bottom_nav_icon"
+        android:titleCondensed="Общее" />
 
     <item
         android:id="@+id/nav_details"
         android:icon="@android:drawable/ic_menu_compass"
-        android:title="Детали" />
+        android:title="Подробно"
+        android:iconTint="@color/bottom_nav_icon"
+        android:titleCondensed="Детали" />
 
     <item
         android:id="@+id/nav_forecast"
         android:icon="@android:drawable/ic_menu_week"
-        android:title="Прогноз" />
+        android:title="Прогноз"
+        android:iconTint="@color/bottom_nav_icon"
+        android:titleCondensed="Прогноз" />
 </menu>
