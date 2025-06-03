@@ -1,56 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/fragment_weather_basic"
+
+    android:id="@+id/swipe_refresh"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp"
-    android:background="@drawable/background_gradient">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/text_city"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Город"
-        android:textSize="20sp"
-        android:textColor="#333333"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_goneMarginTop="100dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/fragment_weather_basic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        android:background="@drawable/background_gradient">
 
-    <TextView
-        android:id="@+id/text_coordinates"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Координаты"
-        android:textSize="18sp"
-        android:padding="8dp"
-        android:textColor="#333333"
-        app:layout_constraintTop_toBottomOf="@id/text_city"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        <TextView
+            android:id="@+id/text_city"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Город"
+            android:textSize="20sp"
+            android:textColor="#333333"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_goneMarginTop="100dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
-    <TextView
-        android:id="@+id/text_temperature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Температура"
-        android:textSize="32sp"
-        android:padding="8dp"
-        android:textColor="#333333"
-        app:layout_constraintTop_toBottomOf="@id/text_coordinates"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        <TextView
+            android:id="@+id/text_coordinates"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Координаты"
+            android:textSize="18sp"
+            android:padding="8dp"
+            android:textColor="#333333"
+            app:layout_constraintTop_toBottomOf="@id/text_city"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
-    <ImageView
-        android:id="@+id/image_weather"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="Иконка погоды"
-        app:layout_constraintTop_toBottomOf="@id/text_temperature"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/text_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Температура"
+            android:textSize="32sp"
+            android:padding="8dp"
+            android:textColor="#333333"
+            app:layout_constraintTop_toBottomOf="@id/text_coordinates"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageView
+            android:id="@+id/image_weather"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="16dp"
+            android:contentDescription="Иконка погоды"
+            app:layout_constraintTop_toBottomOf="@id/text_temperature"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
