@@ -66,13 +66,13 @@ public class ForecastFragment extends Fragment
                     {
                         ForecastAdapter adapter = new ForecastAdapter(forecastList);
                         recyclerView.setAdapter(adapter);
-                        Toast.makeText(requireContext(), "Прогноз из кеша", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "Forecast from cache", Toast.LENGTH_SHORT).show();
                     });
                 }
                 else
                 {
                     requireActivity().runOnUiThread(() ->
-                            Toast.makeText(requireContext(), "Нет данных прогноза", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "No forecast data", Toast.LENGTH_SHORT).show()
                     );
                 }
             }

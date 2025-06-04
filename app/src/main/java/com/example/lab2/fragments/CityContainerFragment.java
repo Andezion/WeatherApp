@@ -142,9 +142,9 @@ public class CityContainerFragment extends Fragment
             }
             catch (Exception e)
             {
-                Log.e("CityFragment", "Ошибка загрузки погоды", e);
+                Log.e("CityFragment", "Weather download error", e);
                 requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(), "Ошибка загрузки погоды", Toast.LENGTH_SHORT).show());
+                        Toast.makeText(requireContext(), "Weather download error", Toast.LENGTH_SHORT).show());
             }
         }).start();
 

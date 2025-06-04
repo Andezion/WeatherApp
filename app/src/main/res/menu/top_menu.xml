@@ -4,13 +4,13 @@
     android:background="@android:color/white">
     <item
         android:id="@+id/menu_remove_city"
-        android:title="Удалить город"
+        android:title="Delete city"
         android:icon="@android:drawable/ic_menu_delete"
         android:background="@android:color/white"
         app:showAsAction="never" />
     <item
         android:id="@+id/menu_change_city"
-        android:title="Сменить город"
+        android:title="Change city"
         android:icon="@android:drawable/ic_menu_edit"
         android:background="@android:color/white"
         app:showAsAction="always" />

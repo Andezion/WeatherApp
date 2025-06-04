@@ -14,7 +14,7 @@
             android:id="@+id/text_wind"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Скорость ветра"
+            android:text="Wind speed"
             android:textSize="18sp"
             android:layout_marginTop="12dp"
             android:paddingTop="100dp"
@@ -24,7 +24,7 @@
             android:id="@+id/text_wind_direction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Направление ветра"
+            android:text="Wind direction"
             android:textSize="18sp"
             android:layout_marginTop="8dp"
             android:textColor="#333333" />
@@ -33,7 +33,7 @@
             android:id="@+id/text_humidity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Влажность"
+            android:text="Humidity"
             android:textSize="18sp"
             android:layout_marginTop="8dp"
             android:textColor="#333333" />
@@ -42,7 +42,7 @@
             android:id="@+id/text_visibility"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Видимость"
+            android:text="Visibility"
             android:textSize="18sp"
             android:layout_marginTop="8dp"
             android:textColor="#333333" />
@@ -51,7 +51,7 @@
             android:id="@+id/text_pressure"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Давление"
+            android:text="Pressure"
             android:textSize="18sp"
             android:layout_marginTop="8dp"
             android:textColor="#333333" />
@@ -60,7 +60,7 @@
             android:id="@+id/text_feels_like"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ощущается как"
+            android:text="Feels like"
             android:textSize="18sp"
             android:layout_marginTop="8dp"
             android:textColor="#333333" />
@@ -69,7 +69,7 @@
             android:id="@+id/text_temp_range"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Мин/Макс температура"
+            android:text="Min/Max temperature"
             android:textSize="18sp"
             android:layout_marginTop="8dp"
             android:textColor="#333333" />
@@ -78,7 +78,7 @@
             android:id="@+id/text_coordinates"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Координаты"
+            android:text="Coordinates"
             android:textSize="18sp"
             android:layout_marginTop="8dp"
             android:textColor="#333333" />
@@ -87,7 +87,7 @@
             android:id="@+id/text_sunrise"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Восход"
+            android:text="Sunrise"
             android:textSize="18sp"
             android:layout_marginTop="8dp"
             android:textColor="#333333" />
@@ -96,7 +96,7 @@
             android:id="@+id/text_sunset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Закат"
+            android:text="Sunset"
             android:textSize="18sp"
             android:layout_marginTop="8dp"
             android:textColor="#333333" />

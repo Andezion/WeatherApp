@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@android:color/transparent"
-        android:title="Погода"
+        android:title="Weather"
         android:titleTextColor="@android:color/white" />
 
     <com.google.android.material.tabs.TabLayout
@@ -32,7 +32,7 @@
         app:tabSelectedTextColor="#FFFFFFFF"
         app:tabRippleColor="@android:color/transparent"
         android:background="@android:color/transparent"
-        android:contentDescription="Города погоды" />
+        android:contentDescription="Weather Cities" />
 
 
 

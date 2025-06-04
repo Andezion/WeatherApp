@@ -78,7 +78,7 @@ public class WeatherFragment extends Fragment {
 
                 } catch (Exception e) {
                     requireActivity().runOnUiThread(() -> {
-                        Toast.makeText(requireContext(), "Не удалось обновить", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "Failed to update", Toast.LENGTH_SHORT).show();
                         swipeRefreshLayout.setRefreshing(false);
                     });
                 }
@@ -88,9 +88,10 @@ public class WeatherFragment extends Fragment {
         return view;
     }
 
+    @SuppressLint("SetTextI18n")
     private void updateUI() {
-        textCity.setText("Город: " + city);
-        textCoordinates.setText("Координаты: " + lat + ", " + lon);
+        textCity.setText("City: " + city);
+        textCoordinates.setText("Coordinates: " + lat + ", " + lon);
         textTemperature.setText(temp + "°C");
 
         String iconUrl = "https://openweathermap.org/img/wn/" + iconCode + "@4x.png";

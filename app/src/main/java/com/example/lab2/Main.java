@@ -88,14 +88,14 @@ public class Main extends AppCompatActivity
     {
         if (cities.size() == 1)
         {
-            Toast.makeText(this, "Нельзя удалить последний город", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "You can't delete the last city", Toast.LENGTH_SHORT).show();
             return;
         }
 
         String[] cityArray = cities.toArray(new String[0]);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Выберите город для удаления");
+        builder.setTitle("Select a city for deletion");
         builder.setItems(cityArray, (dialog, which) -> {
             String cityToRemove = cities.get(which);
             int currentIndex = viewPager.getCurrentItem();
@@ -117,20 +117,20 @@ public class Main extends AppCompatActivity
             }
             viewPager.setCurrentItem(currentIndex, false);
 
-            Toast.makeText(this, "Удалено: " + cityToRemove, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Deleted: " + cityToRemove, Toast.LENGTH_SHORT).show();
         });
 
-        builder.setNegativeButton("Отмена", null);
+        builder.setNegativeButton("Cancel", null);
         builder.show();
     }
 
     private void showChangeCityDialog()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Введите город");
+        builder.setTitle("Enter a city");
 
         final EditText input = new EditText(this);
-        input.setHint("Например: Warsaw");
+        input.setHint("For example: Warsaw");
         builder.setView(input);
 
         builder.setPositiveButton("OK", (dialog, which) -> {
@@ -159,7 +159,7 @@ public class Main extends AppCompatActivity
             }
         });
 
-        builder.setNegativeButton("Отмена", (dialog, which) -> dialog.cancel());
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
     }
 }
