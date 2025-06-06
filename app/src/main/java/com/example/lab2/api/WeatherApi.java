@@ -12,14 +12,15 @@ import java.net.URL;
 public class WeatherApi
 {
     private static final String API_KEY = APIKey.WEATHER_API_KEY;
-    private static final String BASE_URL = "https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&appid=%s";
+    private static final String BASE_URL = "https://api.openweathermap.org/data/2.5/weather?q=%s&units=%s&appid=%s";
 
-    public static String fetchWeatherData(String city) throws Exception
+    public static String fetchWeatherData(String city, String units) throws Exception
     {
-        String urlString = String.format(BASE_URL, city, API_KEY);
+        String urlString = String.format(BASE_URL, city, units, API_KEY);
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
+
 
         if (conn.getResponseCode() != 200)
         {
@@ -41,10 +42,10 @@ public class WeatherApi
         return json.toString();
     }
 
-    public static String fetchForecastData(String city) throws Exception
+    public static String fetchForecastData(String city, String units) throws Exception
     {
-        String urlString = String.format("https://api.openweathermap.org/data/2.5/forecast?q=%s&units=metric&appid=%s",
-                city, APIKey.WEATHER_API_KEY);
+        String urlString = String.format("https://api.openweathermap.org/data/2.5/forecast?q=%s&units=%s&appid=%s",
+                city, units, APIKey.WEATHER_API_KEY);
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");

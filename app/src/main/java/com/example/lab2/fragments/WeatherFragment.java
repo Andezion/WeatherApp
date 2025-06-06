@@ -1,6 +1,9 @@
 package com.example.lab2.fragments;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +49,14 @@ public class WeatherFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
+        if (getArguments() != null) {
+            city = getArguments().getString("city");
+            lat = getArguments().getString("lat");
+            lon = getArguments().getString("lon");
+            temp = getArguments().getString("temp");
+            iconCode = getArguments().getString("icon");
+        }
+
         View view = inflater.inflate(R.layout.fragment_weather_basic, container, false);
 
         // Инициализация
@@ -62,8 +73,13 @@ public class WeatherFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             new Thread(() -> {
                 try {
-                    String json = WeatherApi.fetchWeatherData(city);
+                    SharedPreferences prefs = getActivity().getSharedPreferences("weather_prefs", MODE_PRIVATE);
+                    String units = prefs.getString("temp_unit", "metric");
+
+                    String json = WeatherApi.fetchWeatherData(city, units);
+
                     WeatherCache.saveToCache(requireContext(), json);
+
                     Map<String, String> updatedData = JSonParser.parseWeather(json);
 
                     requireActivity().runOnUiThread(() -> {
@@ -90,13 +106,30 @@ public class WeatherFragment extends Fragment {
 
     @SuppressLint("SetTextI18n")
     private void updateUI() {
+        SharedPreferences prefs = requireActivity().getSharedPreferences("weather_prefs", MODE_PRIVATE);
+        String unit = prefs.getString("temp_unit", "metric");
+        String symbol = unit.equals("imperial") ? "°F" : "°C";
+
         textCity.setText("City: " + city);
         textCoordinates.setText("Coordinates: " + lat + ", " + lon);
-        textTemperature.setText(temp + "°C");
+        textTemperature.setText(temp + symbol);
 
         String iconUrl = "https://openweathermap.org/img/wn/" + iconCode + "@4x.png";
         Glide.with(requireContext())
                 .load(iconUrl)
                 .into(imageWeather);
+    }
+
+    public static WeatherFragment newInstance(String city, String lat, String lon, String temp, String icon)
+    {
+        WeatherFragment fragment = new WeatherFragment();
+        Bundle args = new Bundle();
+        args.putString("city", city);
+        args.putString("lat", lat);
+        args.putString("lon", lon);
+        args.putString("temp", temp);
+        args.putString("icon", icon);
+        fragment.setArguments(args);
+        return fragment;
     }
 }

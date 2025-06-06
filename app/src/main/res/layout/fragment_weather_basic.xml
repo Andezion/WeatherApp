@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:text="City"
             android:textSize="20sp"
+            android:paddingTop="100dp"
             android:textColor="#333333"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_goneMarginTop="100dp"

@@ -1,6 +1,7 @@
 package com.example.lab2.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,38 @@ public class DetailsFragment extends Fragment
 {
     private final Map<String, String> data;
 
+
+    public static DetailsFragment newInstance(
+            String windSpeed,
+            String windDeg,
+            String humidity,
+            String visibility,
+            String pressure,
+            String feelsLike,
+            String tempMin,
+            String tempMax,
+            String lat,
+            String lon,
+            String sunrise,
+            String sunset
+    ) {
+        DetailsFragment fragment = new DetailsFragment();
+        Bundle args = new Bundle();
+        args.putString("wind_speed", windSpeed);
+        args.putString("wind_deg", windDeg);
+        args.putString("humidity", humidity);
+        args.putString("visibility", visibility);
+        args.putString("pressure", pressure);
+        args.putString("feels_like", feelsLike);
+        args.putString("temp_min", tempMin);
+        args.putString("temp_max", tempMax);
+        args.putString("lat", lat);
+        args.putString("lon", lon);
+        args.putString("sunrise", sunrise);
+        args.putString("sunset", sunset);
+        fragment.setArguments(args);
+        return fragment;
+    }
     public DetailsFragment(Map<String, String> data)
     {
         this.data = data;
@@ -41,18 +74,39 @@ public class DetailsFragment extends Fragment
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState)
     {
+        SharedPreferences prefs = requireContext().getSharedPreferences("weather_prefs", android.content.Context.MODE_PRIVATE);
+        String units = prefs.getString("temp_unit", "metric");
+
+        String tempUnit = "°C";
+        String visibilityUnit = "m";
+        String windUnit = "m/s";
+
+        switch (units) {
+            case "imperial":
+                tempUnit = "°F";
+                windUnit = "mph";
+                visibilityUnit = "mi";
+                break;
+            case "standard":
+                tempUnit = "K";
+                windUnit = "m/s";
+                visibilityUnit = "m";
+                break;
+        }
+
         View view = inflater.inflate(R.layout.fragment_weather_details, container, false);
 
-        setText(view, R.id.text_wind, "Скорость ветра: " + data.get("wind_speed") + " м/с");
-        setText(view, R.id.text_wind_direction, "Направление ветра: " + data.get("wind_deg") + "°");
-        setText(view, R.id.text_humidity, "Влажность: " + data.get("humidity") + " %");
-        setText(view, R.id.text_visibility, "Видимость: " + data.get("visibility") + " м");
-        setText(view, R.id.text_pressure, "Давление: " + data.get("pressure") + " гПа");
-        setText(view, R.id.text_feels_like, "Ощущается как: " + data.get("feels_like") + "°C");
-        setText(view, R.id.text_temp_range, "Мин/Макс температура: " + data.get("temp_min") + "°C / " + data.get("temp_max") + "°C");
-        setText(view, R.id.text_coordinates, "Координаты: " + data.get("lat") + ", " + data.get("lon"));
-        setText(view, R.id.text_sunrise, "Восход: " + convertUnixTime(data.get("sunrise")));
-        setText(view, R.id.text_sunset, "Закат: " + convertUnixTime(data.get("sunset")));
+        setText(view, R.id.text_wind, "Wind speed: " + data.get("wind_speed") + " " + windUnit);
+        setText(view, R.id.text_wind_direction, "Wind direction: " + data.get("wind_deg") + "°");
+        setText(view, R.id.text_humidity, "Humidity: " + data.get("humidity") + " %");
+        setText(view, R.id.text_visibility, "Visibility: " + data.get("visibility") + " " + visibilityUnit);
+        setText(view, R.id.text_pressure, "Pressure: " + data.get("pressure") + " hPa");
+        setText(view, R.id.text_feels_like, "Feels like: " + data.get("feels_like") + tempUnit);
+        setText(view, R.id.text_temp_range, "Min/Max temperature: " + data.get("temp_min") + tempUnit + " / " + data.get("temp_max") + tempUnit);
+
+        setText(view, R.id.text_coordinates, "Coordinates: " + data.get("lat") + ", " + data.get("lon"));
+        setText(view, R.id.text_sunrise, "Sunrise: " + convertUnixTime(data.get("sunrise")));
+        setText(view, R.id.text_sunset, "Sunset: " + convertUnixTime(data.get("sunset")));
 
         return view;
     }

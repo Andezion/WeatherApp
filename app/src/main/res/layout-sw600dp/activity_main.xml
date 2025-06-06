@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="@drawable/background_gradient">
+
+    <FrameLayout
+        android:id="@+id/fragment_weather_basic"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp" />
+
+    <FrameLayout
+        android:id="@+id/fragment_weather_details"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp" />
+
+    <FrameLayout
+        android:id="@+id/fragment_weather_forecast"
+        android:layout_width="0dp"
+        android:paddingTop="100dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp" />
+</LinearLayout>

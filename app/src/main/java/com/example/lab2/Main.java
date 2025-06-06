@@ -1,7 +1,12 @@
 package com.example.lab2;
 
+import static android.text.TextUtils.replace;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -16,13 +21,25 @@ import androidx.viewpager2.widget.ViewPager2;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.lab2.adapters.CityPagerAdapter;
+import com.example.lab2.api.WeatherApi;
+import com.example.lab2.fragments.DetailsFragment;
+import com.example.lab2.fragments.ForecastFragment;
+import com.example.lab2.fragments.SettingsFragment;
+import com.example.lab2.fragments.WeatherFragment;
+import com.example.lab2.model.ForecastItem;
 import com.example.lab2.storage.FavoritesManager;
+import com.example.lab2.storage.WeatherCache;
 import com.example.lab2.utils.DepthPageTransformer;
+import com.example.lab2.utils.ForecastParser;
+import com.example.lab2.utils.JSonParser;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 public class Main extends AppCompatActivity
@@ -32,33 +49,113 @@ public class Main extends AppCompatActivity
     private List<String> cities;
     private TabLayout tabLayout;
 
+    private boolean isTablet() {
+        return (getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK)
+                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
+    private void forceEnglishLocale() {
+        Locale locale = new Locale("en");
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.setLocale(locale);
+        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
+    }
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        Objects.requireNonNull(getSupportActionBar()).setTitle("");
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        forceEnglishLocale();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        cities = new ArrayList<>(FavoritesManager.loadFavorites(this));
-        if (cities.isEmpty())
+        Objects.requireNonNull(getSupportActionBar()).setTitle("");
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+
+
+        // tablet
+
+        if(isTablet())
         {
-            cities.add("Lodz");
-            FavoritesManager.saveFavorites(this, cities);
+            cities = new ArrayList<>(FavoritesManager.loadFavorites(this));
+            if (cities.isEmpty()) {
+                cities.add("Lodz");
+                FavoritesManager.saveFavorites(this, cities);
+            }
+            String defaultCity = cities.get(0);
+
+            String cachedJson = WeatherCache.readForecastFromCache(this, defaultCity);
+            Map<String, String> data = null;
+            if (cachedJson != null) {
+                data = JSonParser.parseWeather(cachedJson);
+            }
+
+            Bundle detailsBundle = new Bundle();
+            if (data != null && !data.isEmpty()) {
+                for (Map.Entry<String, String> entry : data.entrySet()) {
+                    detailsBundle.putString(entry.getKey(), entry.getValue());
+                }
+            }
+
+            WeatherFragment weatherFragment = null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                weatherFragment = WeatherFragment.newInstance(defaultCity,
+                        data != null ? data.getOrDefault("lat", "0") : "0",
+                        data != null ? data.getOrDefault("lon", "0") : "0",
+                        data != null ? data.getOrDefault("temp", "0") : "0",
+                        data != null ? data.getOrDefault("icon", "01d") : "01d"
+                );
+            }
+
+            DetailsFragment detailsFragment = null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                detailsFragment = DetailsFragment.newInstance(
+                        data != null ? data.getOrDefault("wind_speed", "0") : "0",
+                        data != null ? data.getOrDefault("wind_deg", "0") : "0",
+                        data != null ? data.getOrDefault("humidity", "0") : "0",
+                        data != null ? data.getOrDefault("visibility", "0") : "0",
+                        data != null ? data.getOrDefault("pressure", "0") : "0",
+                        data != null ? data.getOrDefault("feels_like", "0") : "0",
+                        data != null ? data.getOrDefault("temp_min", "0") : "0",
+                        data != null ? data.getOrDefault("temp_max", "0") : "0",
+                        data != null ? data.getOrDefault("lat", "0") : "0",
+                        data != null ? data.getOrDefault("lon", "0") : "0",
+                        data != null ? data.getOrDefault("sunrise", "0") : "0",
+                        data != null ? data.getOrDefault("sunset", "0") : "0"
+                        );
+            }
+            ForecastFragment forecastFragment = ForecastFragment.newInstance(defaultCity);
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_weather_basic, weatherFragment)
+                    .replace(R.id.fragment_weather_details, detailsFragment)
+                    .replace(R.id.fragment_weather_forecast, forecastFragment)
+                    .commit();
         }
+        else {
 
-        viewPager = findViewById(R.id.view_pager);
-        tabLayout = findViewById(R.id.tab_layout);
+            cities = new ArrayList<>(FavoritesManager.loadFavorites(this));
+            if (cities.isEmpty()) {
+                cities.add("Lodz");
+                FavoritesManager.saveFavorites(this, cities);
+            }
 
-        adapter = new CityPagerAdapter(this, cities);
-        viewPager.setAdapter(adapter);
+            viewPager = findViewById(R.id.view_pager);
+            tabLayout = findViewById(R.id.tab_layout);
 
-        viewPager.setPageTransformer(new DepthPageTransformer());
+            adapter = new CityPagerAdapter(this, cities);
+            viewPager.setAdapter(adapter);
 
-        new TabLayoutMediator(tabLayout, viewPager,
-                (tab, position) -> tab.setText(cities.get(position))
-        ).attach();
+            viewPager.setPageTransformer(new DepthPageTransformer());
+
+            new TabLayoutMediator(tabLayout, viewPager,
+                    (tab, position) -> tab.setText(cities.get(position))
+            ).attach();
+        }
     }
 
     @Override
@@ -67,6 +164,37 @@ public class Main extends AppCompatActivity
         getMenuInflater().inflate(R.menu.top_menu, menu);
         return true;
     }
+
+    private void showUnitsDialog() {
+        final String[] units = {"Celsius (°C)", "Fahrenheit (°F)", "Kelvin (K)"};
+        final String[] unitValues = {"metric", "imperial", "standard"};
+
+        SharedPreferences prefs = getSharedPreferences("weather_prefs", MODE_PRIVATE);
+        String currentUnit = prefs.getString("temp_unit", "metric");
+
+        int checkedItem = 0;
+        for (int i = 0; i < unitValues.length; i++) {
+            if (unitValues[i].equals(currentUnit)) {
+                checkedItem = i;
+                break;
+            }
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Select temperature unit")
+                .setSingleChoiceItems(units, checkedItem, (dialog, which) -> {
+                    // Сохраняем выбранную единицу
+                    prefs.edit().putString("temp_unit", unitValues[which]).apply();
+
+                    // Обновляем фрагменты и интерфейс
+                    recreate(); // или вручную пересоздать адаптер + viewPager
+
+                    dialog.dismiss(); // Закрыть диалог после выбора
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item)
@@ -79,6 +207,15 @@ public class Main extends AppCompatActivity
         else if (item.getItemId() == R.id.menu_remove_city)
         {
             showRemoveCityDialog();
+            return true;
+        }
+        else if (item.getItemId() == R.id.menu_settings)
+        {
+//            getSupportFragmentManager().beginTransaction()
+//                    .replace(android.R.id.content, new SettingsFragment())
+//                    .addToBackStack(null)
+//                    .commit();
+            showUnitsDialog();
             return true;
         }
         return super.onOptionsItemSelected(item);

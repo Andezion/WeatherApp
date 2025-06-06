@@ -1,6 +1,7 @@
 package com.example.lab2.storage;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
@@ -21,6 +22,11 @@ public class WeatherCache
 
     public static String readForecastFromCache(Context context, String city)
     {
+        if (city == null)
+        {
+            Log.w("WeatherCache", "readForecastFromCache called with null city");
+            return null;
+        }
         return context.getSharedPreferences("forecast_cache", Context.MODE_PRIVATE)
                 .getString(city.toLowerCase(), null);
     }

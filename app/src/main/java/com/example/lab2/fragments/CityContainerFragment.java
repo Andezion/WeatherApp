@@ -1,5 +1,8 @@
 package com.example.lab2.fragments;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
@@ -85,8 +88,11 @@ public class CityContainerFragment extends Fragment
         {
             try
             {
-                String json = WeatherApi.fetchWeatherData(city);
-                String forecastJson = WeatherApi.fetchForecastData(city);
+                SharedPreferences prefs = getActivity().getSharedPreferences("weather_prefs", MODE_PRIVATE);
+                String units = prefs.getString("temp_unit", "metric");
+
+                String json = WeatherApi.fetchWeatherData(city, units);
+                String forecastJson = WeatherApi.fetchForecastData(city, units);
 
                 WeatherCache.saveToCache(requireContext(), json);
                 weatherData = JSonParser.parseWeather(json);

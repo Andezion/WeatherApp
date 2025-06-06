@@ -1,5 +1,8 @@
 package com.example.lab2.fragments;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +49,11 @@ public class ForecastFragment extends Fragment
                 {
                     city = getArguments().getString("city", "Lodz"); // запасной город
                 }
-                String forecastJson = WeatherApi.fetchForecastData(city);
+
+                SharedPreferences prefs = getActivity().getSharedPreferences("weather_prefs", MODE_PRIVATE);
+                String units = prefs.getString("temp_unit", "metric");
+
+                String forecastJson = WeatherApi.fetchForecastData(city, units);
                 List<ForecastItem> forecastList = ForecastParser.parseForecast(forecastJson);
 
                 requireActivity().runOnUiThread(() -> {

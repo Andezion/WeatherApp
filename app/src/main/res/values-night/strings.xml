@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Lab2</string>
     <string name="wind_speed">Wind speed</string>
     <string name="wind_direction">Wind direction</string>
     <string name="humidity">Humidity</string>
