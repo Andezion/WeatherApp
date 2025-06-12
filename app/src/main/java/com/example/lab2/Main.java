@@ -8,6 +8,9 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +35,7 @@ import com.example.lab2.storage.WeatherCache;
 import com.example.lab2.utils.DepthPageTransformer;
 import com.example.lab2.utils.ForecastParser;
 import com.example.lab2.utils.JSonParser;
+import com.example.lab2.utils.NetworkUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -48,6 +52,44 @@ public class Main extends AppCompatActivity
     private CityPagerAdapter adapter;
     private List<String> cities;
     private TabLayout tabLayout;
+
+    Handler handler = new Handler(Looper.getMainLooper());
+    Runnable weatherUpdater = new Runnable() {
+        @Override
+        public void run()
+        {
+            if (NetworkUtils.isNetworkAvailable(Main.this))
+            {
+                loadWeatherFromApi();
+            }
+            handler.postDelayed(this, 5 * 60 * 1000);
+        }
+    };
+
+    private String getPreferredUnits() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        return prefs.getString("units", "metric"); // или "imperial"
+    }
+    private void loadWeatherFromApi() {
+        if (cities == null || cities.isEmpty()) return;
+
+        String units = getPreferredUnits(); // например: "metric"
+        for (String city : cities) {
+            new Thread(() -> {
+                try {
+                    String forecastJson = WeatherApi.fetchForecastData(city, units);
+
+                    runOnUiThread(() -> {
+                        WeatherCache.saveForecastToCache(Main.this, city, forecastJson);
+                        Log.d("WeatherUpdate", "updated: " + city);
+                    });
+
+                } catch (Exception e) {
+                    runOnUiThread(() -> Log.e("WeatherUpdate", "error for: " + city, e));
+                }
+            }).start();
+        }
+    }
 
     private boolean isTablet() {
         return (getResources().getConfiguration().screenLayout
@@ -87,10 +129,21 @@ public class Main extends AppCompatActivity
             }
             String defaultCity = cities.get(0);
 
-            String cachedJson = WeatherCache.readForecastFromCache(this, defaultCity);
+//            String cachedJson = WeatherCache.readForecastFromCache(this, defaultCity);
+//            Map<String, String> data = null;
+//            if (cachedJson != null) {
+//                data = JSonParser.parseWeather(cachedJson);
+//            }
+
             Map<String, String> data = null;
-            if (cachedJson != null) {
-                data = JSonParser.parseWeather(cachedJson);
+
+            if (!NetworkUtils.isNetworkAvailable(this))
+            {
+                String cachedJson = WeatherCache.readForecastFromCache(this, defaultCity);
+                if (cachedJson != null)
+                {
+                    data = JSonParser.parseWeather(cachedJson);
+                }
             }
 
             Bundle detailsBundle = new Bundle();
